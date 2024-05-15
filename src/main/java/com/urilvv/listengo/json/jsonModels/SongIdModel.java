@@ -1,12 +1,13 @@
-package com.urilvv.listengo.models;
+package com.urilvv.listengo.json.jsonModels;
 
-public class SongModel {
+//@Entity
+public class SongIdModel {
 
     private String trackId;
     private String artistId;
     private String albumId;
 
-    public SongModel(String songId, String artistName, String albumName) {
+    public SongIdModel(String songId, String artistName, String albumName) {
         this.trackId = songId;
         this.artistId = artistName;
         this.albumId = albumName;
@@ -55,8 +56,8 @@ public class SongModel {
             return new SongBuilder();
         }
 
-        public SongModel build(){
-            return new SongModel(this.trackId, this.artistId, this.albumId);
+        public SongIdModel build(){
+            return new SongIdModel(this.trackId, this.artistId, this.albumId);
         }
 
         public SongBuilder trackId(String id){
