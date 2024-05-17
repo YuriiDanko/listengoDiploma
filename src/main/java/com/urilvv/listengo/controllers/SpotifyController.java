@@ -6,6 +6,8 @@ import com.urilvv.listengo.json.jsonUtils.JsonInformator;
 import com.urilvv.listengo.json.jsonUtils.Parser;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,11 +25,14 @@ public class SpotifyController {
     private final RestTemplate restTemplate;
     @Value("${spotify.url}")
     private String startUrl;
+    private final Logger logger;
 
-    public SpotifyController(String accessToken, WebApplicationContext applicationContext, RestTemplate restTemplate) {
+    @Autowired
+    public SpotifyController(String accessToken, WebApplicationContext applicationContext, RestTemplate restTemplate, Logger logger) {
         this.accessToken = accessToken;
         this.webApplicationContext = applicationContext;
         this.restTemplate = restTemplate;
+        this.logger = logger;
     }
 
     @GetMapping("/recommendations")
@@ -45,6 +50,7 @@ public class SpotifyController {
             response = restTemplate.exchange(requestUrl, HttpMethod.GET, request, String.class);
         } catch (HttpClientErrorException errorException) {
             if (errorException.getStatusCode() != HttpStatusCode.valueOf(401)) {
+                logger.error("Error occurred: " + errorException.getStatusCode() + " " + errorException.getMessage());
                 return errorException.getResponseBodyAsString();
             }
             accessToken = webApplicationContext.getBean(String.class);
@@ -53,7 +59,7 @@ public class SpotifyController {
 
         JsonNode jsonNode = Parser.parseJson(response.getBody());
 
-        System.out.println("Recommendations returned.");
+        logger.info("Recommendation returned");
 
         return Parser.getTracksJson(jsonNode.get("tracks")).toString(4);
     }
@@ -72,6 +78,7 @@ public class SpotifyController {
             response = restTemplate.exchange(requestUrl, HttpMethod.GET, request, String.class);
         } catch (HttpClientErrorException errorException) {
             if (errorException.getStatusCode() != HttpStatusCode.valueOf(401)) {
+                logger.error("Error occurred: " + errorException.getStatusCode() + " " + errorException.getMessage());
                 return errorException.getResponseBodyAsString();
             }
             accessToken = webApplicationContext.getBean(String.class);
@@ -85,7 +92,7 @@ public class SpotifyController {
         resultJson.put("albums", Parser.getAlbumsJson(jsonNode.get("albums").get("items")));
         resultJson.put("artists", Parser.getArtistsJson(jsonNode.get("artists").get("items")));
 
-        System.out.println("Search result returned.");
+        logger.info("Search results returned");
 
         return resultJson.toString(4);
     }
@@ -115,6 +122,7 @@ public class SpotifyController {
             response = restTemplate.exchange(urlBuilder.toString(), HttpMethod.GET, request, String.class);
         } catch (HttpClientErrorException errorException) {
             if (errorException.getStatusCode() != HttpStatusCode.valueOf(401)) {
+                logger.error("Error occurred: " + errorException.getStatusCode() + " " + errorException.getMessage());
                 return errorException.getResponseBodyAsString();
             }
             accessToken = webApplicationContext.getBean(String.class);
@@ -141,6 +149,8 @@ public class SpotifyController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(searchType, jsonArray);
 
+        logger.info("Search result by " + searchType + " returned");
+
         return jsonObject.toString(4);
     }
 
@@ -158,6 +168,7 @@ public class SpotifyController {
             response = restTemplate.exchange(requestUrl, HttpMethod.GET, request, String.class);
         } catch (HttpClientErrorException errorException) {
             if (errorException.getStatusCode() != HttpStatusCode.valueOf(401)) {
+                logger.error("Error occurred: " + errorException.getStatusCode() + " " + errorException.getMessage());
                 return errorException.getResponseBodyAsString();
             }
             accessToken = webApplicationContext.getBean(String.class);
@@ -165,6 +176,8 @@ public class SpotifyController {
         }
 
         JsonNode jsonNode = Parser.parseJson(response.getBody());
+
+        logger.info("Album tracks returned");
 
         return Parser.getAlbumTracksJson(jsonNode.get("items"), albumId);
     }
@@ -183,6 +196,7 @@ public class SpotifyController {
             response = restTemplate.exchange(requestUrl, HttpMethod.GET, httpEntity, String.class);
         } catch (HttpClientErrorException errorException){
             if(errorException.getStatusCode() != HttpStatus.valueOf(401)){
+                logger.error("Error occurred: " + errorException.getStatusCode() + " " + errorException.getMessage());
                 return errorException.getResponseBodyAsString();
             }
             accessToken = webApplicationContext.getBean(String.class);
@@ -190,6 +204,8 @@ public class SpotifyController {
         }
 
         JsonNode jsonNode = Parser.parseJson(response.getBody());
+
+        logger.info("Artist top-tracks returned");
 
         return Parser.getTracksJson(jsonNode.get("tracks")).toString(4);
     }
