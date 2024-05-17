@@ -8,7 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,13 +33,11 @@ public class SpotifyController {
     @GetMapping("/recommendations")
     private String recommendations() throws JsonProcessingException {
         String requestUrl = startUrl + "/recommendations?limit=10&market=ES&seed_artists=4NHQUGzhtTLFvgF5SZesLK&" +
-                "seed_genres=classical,country&seed_tracks=0c6xIDDpzE81m2q797ordA";
+                "seed_genres=classical,rock&seed_tracks=0c6xIDDpzE81m2q797ordA";
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(accessToken);
         HttpEntity<?> request = new HttpEntity<>(httpHeaders);
-
-        System.out.println(accessToken);
 
         ResponseEntity<String> response;
 
@@ -145,6 +142,56 @@ public class SpotifyController {
         jsonObject.put(searchType, jsonArray);
 
         return jsonObject.toString(4);
+    }
+
+    @GetMapping("/albums/{albumId}/tracks")
+    private String getAlbumTracks(@PathVariable("albumId") String albumId) throws JsonProcessingException {
+        String requestUrl = startUrl + "/albums/" + albumId + "/tracks";
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(accessToken);
+        HttpEntity<?> request = new HttpEntity<>(httpHeaders);
+
+        ResponseEntity<String> response;
+
+        try {
+            response = restTemplate.exchange(requestUrl, HttpMethod.GET, request, String.class);
+        } catch (HttpClientErrorException errorException) {
+            if (errorException.getStatusCode() != HttpStatusCode.valueOf(401)) {
+                return errorException.getResponseBodyAsString();
+            }
+            accessToken = webApplicationContext.getBean(String.class);
+            return getAlbumTracks(albumId);
+        }
+
+        JsonNode jsonNode = Parser.parseJson(response.getBody());
+
+        return Parser.getAlbumTracksJson(jsonNode.get("items"), albumId);
+    }
+
+    @GetMapping("/artists/{artistId}/top-tracks")
+    private String getTopTracks(@PathVariable("artistId") String artistId) throws JsonProcessingException {
+        String requestUrl = startUrl + "/artists/" + artistId + "/top-tracks";
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(accessToken);
+        HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+
+        ResponseEntity<String> response;
+
+        try{
+            response = restTemplate.exchange(requestUrl, HttpMethod.GET, httpEntity, String.class);
+        } catch (HttpClientErrorException errorException){
+            if(errorException.getStatusCode() != HttpStatus.valueOf(401)){
+                return errorException.getResponseBodyAsString();
+            }
+            accessToken = webApplicationContext.getBean(String.class);
+            return getTopTracks(artistId);
+        }
+
+        JsonNode jsonNode = Parser.parseJson(response.getBody());
+
+        return Parser.getTracksJson(jsonNode.get("tracks")).toString(4);
     }
 
 }

@@ -40,6 +40,7 @@ public class SpotifyConfiguration {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
 
         ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, request, Map.class);
+        System.out.println((String) response.getBody().get("access_token"));
 
         return (String) response.getBody().get("access_token");
     }

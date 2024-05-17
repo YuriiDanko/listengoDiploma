@@ -6,10 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.urilvv.listengo.json.jsonModels.AlbumIdModel;
 import com.urilvv.listengo.json.jsonModels.ArtistIdModel;
+import com.urilvv.listengo.json.jsonModels.SongIdModel.SongBuilder;
 import com.urilvv.listengo.json.jsonModels.SongIdModel;
-import com.urilvv.listengo.models.SongJsonModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class Parser {
@@ -24,11 +25,32 @@ public class Parser {
         return objectMapper.readTree(src);
     }
 
-    public static JSONArray getTracksJson(JsonNode jsonNode) {
+    public static String toJson(Object song) throws JsonProcessingException {
+        ObjectWriter ow = new ObjectMapper().writerWithDefaultPrettyPrinter();
+        return ow.writeValueAsString(song);
+    }
+
+    public static String getAlbumTracksJson(JsonNode jsonNode, String albumId) throws JsonProcessingException {
+        ArrayList<SongIdModel> songs = new ArrayList<>();
+
+        for(JsonNode node : jsonNode){
+            SongIdModel song = new SongBuilder().builder()
+                    .trackId(node.get("id").toString().replace("\"", ""))
+                    .albumId(albumId)
+                    .artistId(node.get("artists").findValue("id").toString().replace("\"", ""))
+                    .build();
+
+            songs.add(song);
+        }
+
+        return Parser.toJson(songs);
+    }
+
+    public static JSONArray getTracksJson(JsonNode jsonNode) throws JsonProcessingException {
         ArrayList<SongIdModel> songs = new ArrayList<>();
 
         for (JsonNode node : jsonNode) {
-            SongIdModel song = new SongIdModel.SongBuilder().builder()
+            SongIdModel song = new SongBuilder().builder()
                     .trackId(node.get("id").toString().replace("\"", ""))
                     .albumId(node.get("album").get("id").toString().replace("\"", ""))
                     .artistId(node.get("album").get("artists").findValue("id").toString().replace("\"", ""))
@@ -37,60 +59,27 @@ public class Parser {
             songs.add(song);
         }
 
-        JSONArray jsonArray = new JSONArray();
-
-        for(SongIdModel song : songs){
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("trackId", song.getTrackId());
-            jsonObject.put("albumId", song.getAlbumId());
-            jsonObject.put("artistId", song.getArtistId());
-
-            jsonArray.put(jsonObject);
-        }
-
-        return jsonArray;
+        return new JSONArray(Parser.toJson(songs));
     }
 
-    public static JSONArray getAlbumsJson(JsonNode jsonNode) {
+    public static JSONArray getAlbumsJson(JsonNode jsonNode) throws JsonProcessingException {
         ArrayList<AlbumIdModel> albums = new ArrayList<>();
 
-        for(JsonNode node : jsonNode){
+        for (JsonNode node : jsonNode) {
             albums.add(new AlbumIdModel(node.get("id").toString().replace("\"", "")));
         }
 
-        JSONArray jsonArray = new JSONArray();
-
-        for(AlbumIdModel album : albums){
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("albumId", album.getAlbumId());
-
-            jsonArray.put(jsonObject);
-        }
-
-        return jsonArray;
+        return new JSONArray(Parser.toJson(albums));
     }
 
-    public static JSONArray getArtistsJson(JsonNode jsonNode){
+    public static JSONArray getArtistsJson(JsonNode jsonNode) throws JsonProcessingException {
         ArrayList<ArtistIdModel> artists = new ArrayList<>();
 
-        for(JsonNode node : jsonNode){
+        for (JsonNode node : jsonNode) {
             artists.add(new ArtistIdModel(node.get("id").toString().replace("\"", "")));
         }
 
-        JSONArray jsonArray = new JSONArray();
-
-        for(ArtistIdModel artist : artists){
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("artistId", artist.getArtistId());
-
-            jsonArray.put(jsonObject);
-        }
-
-        return jsonArray;
+        return new JSONArray(Parser.toJson(artists));
     }
 
-    public static String toJson(Object song) throws JsonProcessingException {
-        ObjectWriter ow = new ObjectMapper().writerWithDefaultPrettyPrinter();
-        return ow.writeValueAsString(song);
-    }
 }
