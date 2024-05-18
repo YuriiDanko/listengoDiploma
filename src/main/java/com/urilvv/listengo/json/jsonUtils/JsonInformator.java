@@ -2,10 +2,10 @@ package com.urilvv.listengo.json.jsonUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.urilvv.listengo.models.AlbumJsonModel;
-import com.urilvv.listengo.models.ArtistJsonModel;
-import com.urilvv.listengo.models.SongJsonModel;
-import com.urilvv.listengo.models.SongJsonModel.SongJsonBuilder;
+import com.urilvv.listengo.models.jsonModels.AlbumJsonModel;
+import com.urilvv.listengo.models.jsonModels.ArtistJsonModel;
+import com.urilvv.listengo.models.jsonModels.SongJsonModel;
+import com.urilvv.listengo.models.jsonModels.SongJsonModel.SongJsonBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
