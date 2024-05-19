@@ -13,5 +13,4 @@ public interface UserService {
     UserDto createUser(User user);
     Optional<User> searchUser(String username);
 
-
 }

@@ -39,6 +39,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity createUser(@RequestBody RegisterReq registerReq) {
+        System.out.println("Entered AuthController-Register");
         User user = new User();
         user.setEmail(registerReq.getEmail());
         user.setUserName(registerReq.getUsername());
@@ -47,11 +48,12 @@ public class AuthController {
 
         LoginRegisterRes registerRes = new LoginRegisterRes(user.getUserName(), token);
 
-        return ResponseEntity.ok(registerRes);
+        return ResponseEntity.status(HttpStatus.CREATED).body(registerRes);
     }
 
     @PostMapping("/login")
     public ResponseEntity loginUser(@RequestBody LoginReq loginReq) {
+        System.out.println("Entered AuthController-Login");
         try {
             Authentication authentication =
                     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginReq.getUsername(), loginReq.getPassword()));
@@ -60,8 +62,7 @@ public class AuthController {
             String token = jwtUtil.createToken(userDto);
             LoginRegisterRes loginRes = new LoginRegisterRes(username, token);
 
-            return ResponseEntity.ok(loginRes);
-
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(loginRes);
         } catch (BadCredentialsException e) {
             ErrorRes errorResponse = new ErrorRes(HttpStatus.BAD_REQUEST, "Invalid username or password");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);

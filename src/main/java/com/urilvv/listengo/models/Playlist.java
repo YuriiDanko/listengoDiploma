@@ -22,6 +22,14 @@ public class Playlist {
     public Playlist() {
     }
 
+    public Playlist(String playlistId, String playlistName, String imageUrl, String creator, Set<User> users) {
+        this.playlistId = playlistId;
+        this.playlistName = playlistName;
+        this.imageUrl = imageUrl;
+        this.creator = creator;
+        this.users = users;
+    }
+
     public String getPlaylistId() {
         return playlistId;
     }
