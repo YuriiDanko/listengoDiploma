@@ -1,16 +1,18 @@
 package com.urilvv.listengo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String userId;
@@ -20,16 +22,18 @@ public class User {
     private String userName;
     private String password;
     @CreationTimestamp(source = SourceType.DB)
-    private LocalDateTime creationTime;
+    private LocalDateTime createdAt;
     @UpdateTimestamp(source = SourceType.DB)
-    private LocalDateTime updatedOn;
+    private LocalDateTime updatedAt;
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+            name = "user_playlists",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "playlist_id"))
+    private Set<Playlist> playlists;
 
-    public User(){}
-
-    public User(String email, String userName, String password) {
-        this.email = email;
-        this.userName = userName;
-        this.password = password;
+    public User() {
     }
 
     public String getUserId() {
@@ -64,20 +68,28 @@ public class User {
         this.password = password;
     }
 
-    public LocalDateTime getCreationTime() {
-        return creationTime;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreationTime(LocalDateTime creationTime) {
-        this.creationTime = creationTime;
+    public void setCreatedAt(LocalDateTime creationTime) {
+        this.createdAt = creationTime;
     }
 
-    public LocalDateTime getUpdatedOn() {
-        return updatedOn;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdatedOn(LocalDateTime updatedOn) {
-        this.updatedOn = updatedOn;
+    public void setUpdatedAt(LocalDateTime updatedOn) {
+        this.updatedAt = updatedOn;
+    }
+
+    public Set<Playlist> getPlaylists() {
+        return playlists;
+    }
+
+    public void setPlaylists(Set<Playlist> playlists) {
+        this.playlists = playlists;
     }
 
     @Override
@@ -87,8 +99,8 @@ public class User {
                 ", email='" + email + '\'' +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
-                ", creationTime=" + creationTime +
-                ", updatedOn=" + updatedOn +
+                ", creationTime=" + createdAt +
+                ", updatedOn=" + updatedAt +
                 '}';
     }
 
