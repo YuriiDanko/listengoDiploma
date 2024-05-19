@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,6 +14,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String userId;
+    @Column(unique = true)
     private String email;
     @Column(unique = true)
     private String userName;

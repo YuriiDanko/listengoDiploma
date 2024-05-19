@@ -1,11 +1,11 @@
 package com.urilvv.listengo.models.securityModels.response;
 
-public class LoginRes {
+public class LoginRegisterRes {
 
     private String username;
     private String token;
 
-    public LoginRes(String username, String token) {
+    public LoginRegisterRes(String username, String token) {
         this.username = username;
         this.token = token;
     }
