@@ -36,31 +36,31 @@ public class UserDto {
         this.userName = userName;
     }
 
-    public static class UserDtoBuilder{
+    public static class UserDtoBuilder {
 
         private String userId;
         private String email;
         private String userName;
 
-        public static UserDtoBuilder builder(){
+        public static UserDtoBuilder builder() {
             return new UserDtoBuilder();
         }
 
-        public UserDto build(){
+        public UserDto build() {
             return new UserDto(this.userId, this.email, this.userName);
         }
 
-        public UserDtoBuilder userId(String userId){
+        public UserDtoBuilder userId(String userId) {
             this.userId = userId;
             return this;
         }
 
-        public UserDtoBuilder email(String email){
+        public UserDtoBuilder email(String email) {
             this.email = email;
             return this;
         }
 
-        public UserDtoBuilder userName(String userName){
+        public UserDtoBuilder userName(String userName) {
             this.userName = userName;
             return this;
         }

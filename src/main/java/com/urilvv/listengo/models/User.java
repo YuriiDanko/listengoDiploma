@@ -77,4 +77,16 @@ public class User {
         this.updatedOn = updatedOn;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId='" + userId + '\'' +
+                ", email='" + email + '\'' +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", creationTime=" + creationTime +
+                ", updatedOn=" + updatedOn +
+                '}';
+    }
+
 }
