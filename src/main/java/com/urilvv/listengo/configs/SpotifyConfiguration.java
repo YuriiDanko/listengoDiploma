@@ -1,5 +1,7 @@
 package com.urilvv.listengo.configs;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,5 +50,10 @@ public class SpotifyConfiguration {
     @Bean
     public RestTemplate getRestTemplate(){
         return new RestTemplate();
+    }
+
+    @Bean
+    public Logger getLogger(){
+        return LoggerFactory.getLogger("SpotifyControllerLogger");
     }
 }

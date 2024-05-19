@@ -1,4 +1,4 @@
-package com.urilvv.listengo.models;
+package com.urilvv.listengo.models.jsonModels;
 
 public class AlbumJsonModel {
 
