@@ -1,16 +1,31 @@
 package com.urilvv.listengo.json.jsonModels;
 
-//@Entity
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.urilvv.listengo.models.Playlist;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+
+import java.util.Set;
+
+@Entity
 public class SongIdModel {
 
+    @Id
     private String trackId;
     private String artistId;
     private String albumId;
+    @JsonIgnore
+    @ManyToMany(mappedBy = "songs")
+    private Set<Playlist> playlists;
 
-    public SongIdModel(String songId, String artistName, String albumName) {
+    public SongIdModel() {}
+
+    public SongIdModel(String songId, String artistName, String albumName, Set<Playlist> playlists) {
         this.trackId = songId;
         this.artistId = artistName;
         this.albumId = albumName;
+        this.playlists = playlists;
     }
 
     public String getTrackId() {
@@ -37,6 +52,14 @@ public class SongIdModel {
         this.albumId = albumId;
     }
 
+    public Set<Playlist> getPlaylists() {
+        return playlists;
+    }
+
+    public void setPlaylists(Set<Playlist> playlists) {
+        this.playlists = playlists;
+    }
+
     @Override
     public String toString() {
         return "SongModel{" +
@@ -51,13 +74,14 @@ public class SongIdModel {
         private String trackId;
         private String artistId;
         private String albumId;
+        private Set<Playlist> playlists;
 
         public SongBuilder builder(){
             return new SongBuilder();
         }
 
         public SongIdModel build(){
-            return new SongIdModel(this.trackId, this.artistId, this.albumId);
+            return new SongIdModel(this.trackId, this.artistId, this.albumId, this.playlists);
         }
 
         public SongBuilder trackId(String id){
@@ -72,6 +96,11 @@ public class SongIdModel {
 
         public SongBuilder artistId(String artistId){
             this.artistId = artistId;
+            return this;
+        }
+
+        public SongBuilder playlists(Set<Playlist> playlists){
+            this.playlists = playlists;
             return this;
         }
 

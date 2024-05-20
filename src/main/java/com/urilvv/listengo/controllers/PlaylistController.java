@@ -29,11 +29,13 @@ public class PlaylistController {
     @PostMapping("/create-playlist/{userId}")
     public ResponseEntity createPlaylist(@PathVariable("userId") String userId, @RequestBody PlaylistReq playlistReq) {
         User user = userService.searchById(userId).get();
-        Set<Playlist> playlists = new HashSet<>();
+        Set<Playlist> playlists = user.getPlaylists() == null ? new HashSet<>() : user.getPlaylists();
         Playlist pl = PlaylistBuilder.builder()
                 .playlistName(playlistReq.getPlaylistName())
                 .creator(userId)
                 .imageUrl(playlistReq.getImageUrl())
+                .songs(new HashSet<>())
+                .isPrivate(playlistReq.isPrivate())
                 .build();
         try {
             pl = playlistService.createPlaylist(pl);
@@ -60,7 +62,7 @@ public class PlaylistController {
         return ResponseEntity.ok(pl);
     }
 
-    @DeleteMapping("/delete-playlist/{playlistId}")
+    @DeleteMapping(path = "/delete-playlist/{playlistId}")
     public ResponseEntity deletePlaylist(@PathVariable("playlistId") String playlistId, @RequestParam("userId") String userId) {
         User user = userService.searchById(userId).get();
         Set<Playlist> playlists = user.getPlaylists();

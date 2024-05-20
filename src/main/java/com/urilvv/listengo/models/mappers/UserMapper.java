@@ -14,8 +14,6 @@ public class UserMapper {
                 .playlists(user.getPlaylists())
                 .build();
 
-        System.out.println(userDto);
-
         return userDto;
     }
 
