@@ -25,7 +25,6 @@ public class User {
     private LocalDateTime createdAt;
     @UpdateTimestamp(source = SourceType.DB)
     private LocalDateTime updatedAt;
-    @JsonIgnore
     @ManyToMany
     @JoinTable(
             name = "user_playlists",
@@ -99,9 +98,9 @@ public class User {
                 ", email='" + email + '\'' +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
-                ", creationTime=" + createdAt +
-                ", updatedOn=" + updatedAt +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", playlists=" + playlists +
                 '}';
     }
-
 }

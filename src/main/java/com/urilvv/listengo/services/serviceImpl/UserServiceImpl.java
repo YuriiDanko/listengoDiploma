@@ -22,14 +22,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(User user) {
-        userRepository.save(user);
-        return UserMapper.mapToDto(user);
+    public User createUser(User user) {
+        return userRepository.save(user);
     }
 
     @Override
     public Optional<User> searchUser(String username) {
         return userRepository.findByUserName(username);
+    }
+
+    @Override
+    public Optional<User> searchById(String userID) {
+        return userRepository.findById(userID);
+    }
+
+    @Override
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 
 }

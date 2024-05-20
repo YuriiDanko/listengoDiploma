@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.authentication.AuthenticationManager;
 
+import java.util.HashSet;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -39,12 +41,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity createUser(@RequestBody RegisterReq registerReq) {
-        System.out.println("Entered AuthController-Register");
         User user = new User();
         user.setEmail(registerReq.getEmail());
         user.setUserName(registerReq.getUsername());
         user.setPassword(passwordEncoder.encode(registerReq.getPassword()));
-        String token = jwtUtil.createToken(userService.createUser(user));
+        user.setPlaylists(new HashSet<>());
+        String token = jwtUtil.createToken(UserMapper.mapToDto(userService.createUser(user)));
 
         LoginRegisterRes registerRes = new LoginRegisterRes(user.getUserName(), token);
 
@@ -53,7 +55,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity loginUser(@RequestBody LoginReq loginReq) {
-        System.out.println("Entered AuthController-Login");
         try {
             Authentication authentication =
                     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginReq.getUsername(), loginReq.getPassword()));

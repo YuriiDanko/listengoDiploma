@@ -11,7 +11,10 @@ public class UserMapper {
                 .userId(user.getUserId())
                 .email(user.getEmail())
                 .userName(user.getUserName())
+                .playlists(user.getPlaylists())
                 .build();
+
+        System.out.println(userDto);
 
         return userDto;
     }

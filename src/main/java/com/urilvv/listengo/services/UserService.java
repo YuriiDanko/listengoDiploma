@@ -10,7 +10,9 @@ import java.util.Optional;
 @Service
 public interface UserService {
 
-    UserDto createUser(User user);
+    User createUser(User user);
     Optional<User> searchUser(String username);
+    Optional<User> searchById(String userID);
+    void saveUser(User user);
 
 }

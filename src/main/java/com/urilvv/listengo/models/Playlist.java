@@ -62,4 +62,48 @@ public class Playlist {
         this.creator = creator;
     }
 
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    public static class PlaylistBuilder{
+
+        private String playlistName;
+        private String imageUrl;
+        private String creator;
+        private Set<User> users;
+
+        public static PlaylistBuilder builder(){
+            return new PlaylistBuilder();
+        }
+
+        public Playlist build(){
+            return new Playlist("", this.playlistName, this.imageUrl, this.creator, this.users);
+        }
+
+        public PlaylistBuilder playlistName(String playlistName){
+            this.playlistName = playlistName;
+            return this;
+        }
+
+        public PlaylistBuilder imageUrl(String imageUrl){
+            this.imageUrl = imageUrl;
+            return this;
+        }
+
+        public PlaylistBuilder creator(String creator){
+            this.creator = creator;
+            return this;
+        }
+
+        public PlaylistBuilder users(Set<User> users){
+            this.users = users;
+            return this;
+        }
+
+    }
 }
