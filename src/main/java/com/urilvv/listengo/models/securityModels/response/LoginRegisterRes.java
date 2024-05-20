@@ -4,10 +4,12 @@ public class LoginRegisterRes {
 
     private String username;
     private String token;
+    private String userId;
 
-    public LoginRegisterRes(String username, String token) {
+    public LoginRegisterRes(String username, String token, String userId) {
         this.username = username;
         this.token = token;
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -26,4 +28,11 @@ public class LoginRegisterRes {
         this.token = token;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }

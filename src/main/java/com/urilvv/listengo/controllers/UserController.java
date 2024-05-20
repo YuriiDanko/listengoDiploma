@@ -22,9 +22,7 @@ public class UserController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity getUser(@PathVariable("userId") String userId) {
-        User user = userService.searchById(userId).get();
-        System.out.println(user);
-        return ResponseEntity.ok(UserMapper.mapToDto(user));
+        return ResponseEntity.ok(UserMapper.mapToDto(userService.searchById(userId).get()));
     }
 
 }

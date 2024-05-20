@@ -3,6 +3,7 @@ package com.urilvv.listengo.controllers;
 import com.urilvv.listengo.models.Playlist;
 import com.urilvv.listengo.models.Playlist.PlaylistBuilder;
 import com.urilvv.listengo.models.User;
+import com.urilvv.listengo.models.mappers.UserMapper;
 import com.urilvv.listengo.models.securityModels.request.PlaylistReq;
 import com.urilvv.listengo.models.securityModels.response.ErrorRes;
 import com.urilvv.listengo.services.PlaylistService;
@@ -26,7 +27,7 @@ public class PlaylistController {
     }
 
     @PostMapping("/create-playlist/{userId}")
-    public ResponseEntity createPlaylist(@PathVariable("userId") String userId, @RequestBody PlaylistReq playlistReq){
+    public ResponseEntity createPlaylist(@PathVariable("userId") String userId, @RequestBody PlaylistReq playlistReq) {
         User user = userService.searchById(userId).get();
         Set<Playlist> playlists = new HashSet<>();
         Playlist pl = PlaylistBuilder.builder()
@@ -34,9 +35,9 @@ public class PlaylistController {
                 .creator(userId)
                 .imageUrl(playlistReq.getImageUrl())
                 .build();
-        try{
+        try {
             pl = playlistService.createPlaylist(pl);
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             ErrorRes errorRes = new ErrorRes(HttpStatus.BAD_REQUEST, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorRes);
         }
@@ -48,16 +49,61 @@ public class PlaylistController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pl);
     }
 
-    @PutMapping("/edit-playlist/{playListId}")
-    public ResponseEntity editPlaylist(@PathVariable("playListId") String playListId, @RequestBody Playlist playlist){
-        Playlist pl = playlistService.searchById(playListId).get();
+    @PutMapping("/edit-playlist/{playlistId}")
+    public ResponseEntity editPlaylist(@PathVariable("playlistId") String playlistId, @RequestBody PlaylistReq playlistReq) {
+        Playlist pl = playlistService.searchById(playlistId).get();
 
-        pl.setPlaylistName(playlist.getPlaylistName());
-        pl.setImageUrl(playlist.getImageUrl());
+        pl.setPlaylistName(playlistReq.getPlaylistName());
+        pl.setImageUrl(playlistReq.getImageUrl());
         pl = playlistService.save(pl);
 
         return ResponseEntity.ok(pl);
     }
 
+    @DeleteMapping("/delete-playlist/{playlistId}")
+    public ResponseEntity deletePlaylist(@PathVariable("playlistId") String playlistId, @RequestParam("userId") String userId) {
+        User user = userService.searchById(userId).get();
+        Set<Playlist> playlists = user.getPlaylists();
+
+        if(playlists.isEmpty()){
+            return ResponseEntity.badRequest().body(new ErrorRes(HttpStatus.BAD_REQUEST, "User has no playlists added"));
+        }
+
+        for (Playlist pl : playlists) {
+            if (pl.getPlaylistId().equals(playlistId)) {
+                playlists.remove(pl);
+                break;
+            }
+        }
+
+        userService.saveUser(user);
+        return ResponseEntity.ok(playlistService.delete(playlistId));
+    }
+
+    @PutMapping("/add-playlist/{playlistId}")
+    public ResponseEntity addPlaylist(@PathVariable("playlistId") String playlistId, @RequestParam("userId") String userId){
+        User user = userService.searchById(userId).get();
+        user.getPlaylists().add(playlistService.searchById(playlistId).get());
+        userService.saveUser(user);
+        return ResponseEntity.accepted().body(UserMapper.mapToDto(user));
+    }
+
+    @PutMapping("/remove-playlist/{playlistId}")
+    public ResponseEntity removePlaylist(@PathVariable("playlistId") String playlistId, @RequestParam("userId") String userId){
+        User user = userService.searchById(userId).get();
+        Playlist pl = playlistService.searchById(playlistId).get();
+        user.getPlaylists().remove(pl);
+
+        if(checkDependencies(pl)){
+            playlistService.delete(pl.getPlaylistId());
+        }
+
+        userService.saveUser(user);
+        return ResponseEntity.accepted().body(UserMapper.mapToDto(user));
+    }
+
+    private boolean checkDependencies(Playlist playlist){
+        return playlist.getUsers().isEmpty();
+    }
 
 }

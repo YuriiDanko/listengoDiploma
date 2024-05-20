@@ -9,5 +9,6 @@ public interface PlaylistService {
     Playlist createPlaylist(Playlist playlist) throws NullPointerException;
     Optional<Playlist> searchById(String id);
     Playlist save(Playlist playlist);
+    Playlist delete(String playlistId);
 
 }

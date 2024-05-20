@@ -48,7 +48,7 @@ public class AuthController {
         user.setPlaylists(new HashSet<>());
         String token = jwtUtil.createToken(UserMapper.mapToDto(userService.createUser(user)));
 
-        LoginRegisterRes registerRes = new LoginRegisterRes(user.getUserName(), token);
+        LoginRegisterRes registerRes = new LoginRegisterRes(user.getUserName(), token, user.getUserId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(registerRes);
     }
@@ -61,7 +61,7 @@ public class AuthController {
             String username = authentication.getName();
             UserDto userDto = UserMapper.mapToDto(userService.searchUser(username).get());
             String token = jwtUtil.createToken(userDto);
-            LoginRegisterRes loginRes = new LoginRegisterRes(username, token);
+            LoginRegisterRes loginRes = new LoginRegisterRes(username, token, userDto.getUserId());
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(loginRes);
         } catch (BadCredentialsException e) {
