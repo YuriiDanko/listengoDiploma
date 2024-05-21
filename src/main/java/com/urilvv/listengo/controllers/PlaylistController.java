@@ -73,6 +73,7 @@ public class PlaylistController {
 
         for (Playlist pl : playlists) {
             if (pl.getPlaylistId().equals(playlistId)) {
+                Set<User> users = pl.getUsers();
                 playlists.remove(pl);
                 break;
             }

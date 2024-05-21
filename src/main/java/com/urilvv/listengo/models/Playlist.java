@@ -17,7 +17,7 @@ public class Playlist {
     private String creator;
     private boolean isPrivate;
     @JsonIgnore
-    @ManyToMany(mappedBy = "playlists")
+    @ManyToMany(mappedBy = "playlists", cascade = CascadeType.ALL)
     private Set<User> users;
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
