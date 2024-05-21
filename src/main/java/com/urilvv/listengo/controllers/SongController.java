@@ -9,7 +9,6 @@ import com.urilvv.listengo.models.Playlist;
 import com.urilvv.listengo.services.PlaylistService;
 import com.urilvv.listengo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -36,6 +35,7 @@ public class SongController {
                                   @RequestParam("playlistId") String playlistId,
                                   @RequestHeader(HttpHeaders.AUTHORIZATION) String jwtToken) throws JsonProcessingException {
         String requestUrl = "http://localhost:8080/tracks/" + trackId;
+        Playlist pl = playlistService.searchById(playlistId).get();
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(jwtToken.split(" ")[1]);
@@ -50,7 +50,6 @@ public class SongController {
                     .artistId(jsonNode.get("tracks").get(0).get("artist").get("artistId").toString().replace("\"", ""))
                     .build();
 
-        Playlist pl = playlistService.searchById(playlistId).get();
         pl.getSongs().add(song);
         playlistService.save(pl);
 
