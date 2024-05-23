@@ -14,11 +14,13 @@ public class UserController {
 
     private final UserService userService;
     private final JwtBuilderClass jwtUtil;
+    private String accessToken;
 
     @Autowired
-    public UserController(UserService userService, JwtBuilderClass jwtUtil) {
+    public UserController(UserService userService, JwtBuilderClass jwtUtil, String accessToken) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
+        this.accessToken = accessToken;
     }
 
     @GetMapping("/user/{userId}")
@@ -35,7 +37,7 @@ public class UserController {
 
         String jwtToken = jwtUtil.createToken(UserMapper.mapToDto(user));
 
-        LoginRegisterRes loginRegisterRes = new LoginRegisterRes(username, jwtToken, userId);
+        LoginRegisterRes loginRegisterRes = new LoginRegisterRes(username, jwtToken, userId, accessToken);
 
         return ResponseEntity.ok(loginRegisterRes);
     }

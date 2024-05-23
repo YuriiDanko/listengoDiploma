@@ -12,9 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class PlaylistController {
@@ -117,7 +116,12 @@ public class PlaylistController {
             return ResponseEntity.badRequest().body(errorRes);
         }
 
-        Set<Playlist> playlists = user.getPlaylists();
+        Set<Playlist> playlists = user.getPlaylists().stream().sorted(new Comparator<Playlist>() {
+            @Override
+            public int compare(Playlist o1, Playlist o2) {
+                return o1.getPlaylistName().toLowerCase().compareTo(o2.getPlaylistName().toLowerCase());
+            }
+        }).collect(Collectors.toCollection(LinkedHashSet::new));
 
         return ResponseEntity.ok(playlists);
     }

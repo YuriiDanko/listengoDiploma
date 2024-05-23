@@ -37,7 +37,7 @@ public class SpotifyController {
 
     @GetMapping("/recommendations/{genre}")
     private String recommendations(@PathVariable("genre") String genre) throws JsonProcessingException {
-        String requestUrl = startUrl + "/recommendations?limit=10&market=ES&seed_artists=4NHQUGzhtTLFvgF5SZesLK&" +
+        String requestUrl = startUrl + "/recommendations?limit=40&market=ES&seed_artists=4NHQUGzhtTLFvgF5SZesLK&" +
                 "seed_genres=" + genre + "&seed_tracks=0c6xIDDpzE81m2q797ordA";
 
         HttpHeaders httpHeaders = new HttpHeaders();

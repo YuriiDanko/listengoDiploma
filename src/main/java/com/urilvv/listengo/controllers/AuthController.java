@@ -31,12 +31,14 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     private JwtBuilderClass jwtUtil;
     private PasswordEncoder passwordEncoder;
+    private String accessToken;
 
-    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtBuilderClass jwtUtil, PasswordEncoder passwordEncoder) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtBuilderClass jwtUtil, PasswordEncoder passwordEncoder, String accessToken) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
+        this.accessToken = accessToken;
     }
 
     @PostMapping("/register")
@@ -48,7 +50,7 @@ public class AuthController {
         user.setPlaylists(new HashSet<>());
         String token = jwtUtil.createToken(UserMapper.mapToDto(userService.createUser(user)));
 
-        LoginRegisterRes registerRes = new LoginRegisterRes(user.getUserName(), token, user.getUserId());
+        LoginRegisterRes registerRes = new LoginRegisterRes(user.getUserName(), token, user.getUserId(), accessToken);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(registerRes);
     }
@@ -61,7 +63,7 @@ public class AuthController {
             String username = authentication.getName();
             UserDto userDto = UserMapper.mapToDto(userService.searchUser(username).get());
             String token = jwtUtil.createToken(userDto);
-            LoginRegisterRes loginRes = new LoginRegisterRes(username, token, userDto.getUserId());
+            LoginRegisterRes loginRes = new LoginRegisterRes(username, token, userDto.getUserId(), accessToken);
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(loginRes);
         } catch (BadCredentialsException e) {
