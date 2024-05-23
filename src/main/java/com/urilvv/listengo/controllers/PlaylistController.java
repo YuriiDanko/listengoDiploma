@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -103,6 +104,22 @@ public class PlaylistController {
 
         userService.saveUser(user);
         return ResponseEntity.accepted().body(UserMapper.mapToDto(user));
+    }
+
+    @GetMapping("/get-playlists/{userId}")
+    public ResponseEntity getPlaylist(@PathVariable("userId") String userId){
+        User user = null;
+
+        try{
+            user = userService.searchById(userId).get();
+        } catch (Exception e){
+            ErrorRes errorRes = new ErrorRes(HttpStatus.BAD_REQUEST, e.getMessage());
+            return ResponseEntity.badRequest().body(errorRes);
+        }
+
+        Set<Playlist> playlists = user.getPlaylists();
+
+        return ResponseEntity.ok(playlists);
     }
 
     private boolean checkDependencies(Playlist playlist){

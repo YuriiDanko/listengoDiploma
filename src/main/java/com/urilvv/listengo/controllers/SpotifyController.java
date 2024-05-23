@@ -35,10 +35,10 @@ public class SpotifyController {
         this.logger = logger;
     }
 
-    @GetMapping("/recommendations")
-    private String recommendations() throws JsonProcessingException {
+    @GetMapping("/recommendations/{genre}")
+    private String recommendations(@PathVariable("genre") String genre) throws JsonProcessingException {
         String requestUrl = startUrl + "/recommendations?limit=10&market=ES&seed_artists=4NHQUGzhtTLFvgF5SZesLK&" +
-                "seed_genres=classical,rock&seed_tracks=0c6xIDDpzE81m2q797ordA";
+                "seed_genres=" + genre + "&seed_tracks=0c6xIDDpzE81m2q797ordA";
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(accessToken);
@@ -54,7 +54,7 @@ public class SpotifyController {
                 return errorException.getResponseBodyAsString();
             }
             accessToken = webApplicationContext.getBean(String.class);
-            return recommendations();
+            return recommendations(genre);
         }
 
         JsonNode jsonNode = Parser.parseJson(response.getBody());
