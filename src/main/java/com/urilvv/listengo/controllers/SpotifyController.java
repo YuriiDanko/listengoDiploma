@@ -66,7 +66,7 @@ public class SpotifyController {
 
     @GetMapping("/search/{searchValue}")
     private String search(@PathVariable("searchValue") String searchValue) throws JsonProcessingException {
-        String requestUrl = startUrl + "/search?type=track,artist,album&q=track" + searchValue.replace(" ", "") + "&limit=5";
+        String requestUrl = startUrl + "/search?type=track,artist,album&q=track" + searchValue.replace(" ", "") + "&limit=14";
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(accessToken);

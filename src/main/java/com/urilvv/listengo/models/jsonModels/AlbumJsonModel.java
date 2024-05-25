@@ -4,10 +4,12 @@ public class AlbumJsonModel {
 
     private String albumId;
     private String albumName;
+    private String imageUrl;
 
-    public AlbumJsonModel(String albumId, String albumName) {
+    public AlbumJsonModel(String albumId, String albumName, String imageUrl) {
         this.albumId = albumId;
         this.albumName = albumName;
+        this.imageUrl = imageUrl;
     }
 
     public String getAlbumId() {
@@ -24,6 +26,14 @@ public class AlbumJsonModel {
 
     public void setAlbumName(String albumName) {
         this.albumName = albumName;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     @Override

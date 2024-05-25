@@ -1,6 +1,5 @@
 package com.urilvv.listengo.json.jsonModels;
 
-//@Entity
 public class AlbumIdModel {
 
     private String albumId;
