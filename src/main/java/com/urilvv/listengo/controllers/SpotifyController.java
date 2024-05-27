@@ -210,4 +210,30 @@ public class SpotifyController {
         return Parser.getTracksJson(jsonNode.get("tracks")).toString(4);
     }
 
+    @GetMapping("/artist/{artistId}/albums")
+    public String getArtistAlbums(@PathVariable("artistId") String artistId) throws JsonProcessingException {
+        String requestUrl = startUrl + "/artists/" + artistId + "/albums?limit=10";
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(accessToken);
+        HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+
+        ResponseEntity<String> response;
+
+        try{
+            response = restTemplate.exchange(requestUrl, HttpMethod.GET, httpEntity, String.class);
+        } catch (HttpClientErrorException errorException){
+            if(errorException.getStatusCode() != HttpStatus.valueOf(401)){
+                logger.error("Error occurred: " + errorException.getStatusCode() + " " + errorException.getMessage());
+                return errorException.getResponseBodyAsString();
+            }
+            accessToken = webApplicationContext.getBean(String.class);
+            return getTopTracks(artistId);
+        }
+
+        JsonNode jsonNode = Parser.parseJson(response.getBody());
+
+        return Parser.getAlbumsJson(jsonNode.get("items")).toString(4);
+    }
+
 }
