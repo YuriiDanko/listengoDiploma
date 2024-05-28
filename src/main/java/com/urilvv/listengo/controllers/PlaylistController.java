@@ -126,6 +126,13 @@ public class PlaylistController {
         return ResponseEntity.ok(playlists);
     }
 
+    @GetMapping("/playlist/{playlistId}/songs")
+    public ResponseEntity getPlaylistSongs(@PathVariable("playlistId") String playlistId){
+        Playlist pl = playlistService.searchById(playlistId).get();
+
+        return ResponseEntity.ok(pl);
+    }
+
     private boolean checkDependencies(Playlist playlist){
         return playlist.getUsers().isEmpty();
     }

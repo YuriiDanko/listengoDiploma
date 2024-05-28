@@ -145,4 +145,16 @@ public class Playlist {
         }
 
     }
+
+    @Override
+    public String toString() {
+        return "Playlist{" +
+                "playlistId='" + playlistId + '\'' +
+                ", playlistName='" + playlistName + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", creator='" + creator + '\'' +
+                ", isPrivate=" + isPrivate +
+                ", songs=" + songs +
+                '}';
+    }
 }

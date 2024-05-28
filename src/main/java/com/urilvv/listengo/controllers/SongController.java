@@ -16,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Iterator;
+import java.util.Set;
+
 @RestController
 public class SongController {
 
@@ -61,11 +64,17 @@ public class SongController {
                                      @RequestParam("playlistId") String playlistId){
         Playlist pl = playlistService.searchById(playlistId).get();
 
-        pl.getSongs().forEach((obj) -> {
-            if(obj.getTrackId().equals(trackId)){
-                pl.getSongs().remove(obj);
+        Set<SongIdModel> songs = pl.getSongs();
+
+        Iterator<SongIdModel> iterator = songs.iterator();
+
+        while(iterator.hasNext()){
+            SongIdModel temp = iterator.next();
+            if(temp.getTrackId().equals(trackId)){
+                iterator.remove();
+                break;
             }
-        });
+        }
 
         return ResponseEntity.ok(playlistService.save(pl));
     }

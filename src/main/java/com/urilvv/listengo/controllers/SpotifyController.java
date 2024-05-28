@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.urilvv.listengo.json.jsonUtils.JsonInformator;
 import com.urilvv.listengo.json.jsonUtils.Parser;
+import com.urilvv.listengo.models.Playlist;
+import com.urilvv.listengo.services.PlaylistService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -17,21 +19,25 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
+
 @RestController
 public class SpotifyController {
 
     private String accessToken;
     private final WebApplicationContext webApplicationContext;
     private final RestTemplate restTemplate;
+    private final PlaylistService playlistService;
     @Value("${spotify.url}")
     private String startUrl;
     private final Logger logger;
 
     @Autowired
-    public SpotifyController(String accessToken, WebApplicationContext applicationContext, RestTemplate restTemplate, Logger logger) {
+    public SpotifyController(String accessToken, WebApplicationContext applicationContext, RestTemplate restTemplate, PlaylistService playlistService, Logger logger) {
         this.accessToken = accessToken;
         this.webApplicationContext = applicationContext;
         this.restTemplate = restTemplate;
+        this.playlistService = playlistService;
         this.logger = logger;
     }
 
@@ -85,12 +91,17 @@ public class SpotifyController {
             return search(searchValue);
         }
 
+        ArrayList<Playlist> playlists = (ArrayList<Playlist>) playlistService.getAll();
+
         JsonNode jsonNode = Parser.parseJson(response.getBody());
 
         JSONObject resultJson = new JSONObject();
         resultJson.put("tracks", Parser.getTracksJson(jsonNode.get("tracks").get("items")));
         resultJson.put("albums", Parser.getAlbumsJson(jsonNode.get("albums").get("items")));
         resultJson.put("artists", Parser.getArtistsJson(jsonNode.get("artists").get("items")));
+        resultJson.put("playlists", new JSONArray(Parser.toJson(playlists)));
+
+        System.out.println(resultJson.toString(4));
 
         logger.info("Search results returned");
 

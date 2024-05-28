@@ -6,6 +6,8 @@ import com.urilvv.listengo.services.PlaylistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,6 +44,11 @@ public class PlaylistServiceImpl implements PlaylistService {
         playlistRepository.deleteById(playlistId);
 
         return playlist;
+    }
+
+    @Override
+    public List<Playlist> getAll() {
+        return playlistRepository.findAll();
     }
 
 }
