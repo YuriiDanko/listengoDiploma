@@ -91,7 +91,7 @@ public class SpotifyController {
             return search(searchValue);
         }
 
-        ArrayList<Playlist> playlists = (ArrayList<Playlist>) playlistService.getAll();
+        ArrayList<Playlist> playlists = (ArrayList<Playlist>) playlistService.findByPlaylistName(searchValue);
 
         JsonNode jsonNode = Parser.parseJson(response.getBody());
 
@@ -100,8 +100,6 @@ public class SpotifyController {
         resultJson.put("albums", Parser.getAlbumsJson(jsonNode.get("albums").get("items")));
         resultJson.put("artists", Parser.getArtistsJson(jsonNode.get("artists").get("items")));
         resultJson.put("playlists", new JSONArray(Parser.toJson(playlists)));
-
-        System.out.println(resultJson.toString(4));
 
         logger.info("Search results returned");
 

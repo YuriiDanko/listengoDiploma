@@ -47,8 +47,8 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public List<Playlist> getAll() {
-        return playlistRepository.findAll();
+    public List<Playlist> findByPlaylistName(String name) {
+        return playlistRepository.findByPlaylistNameContainingIgnoreCase(name);
     }
 
 }
