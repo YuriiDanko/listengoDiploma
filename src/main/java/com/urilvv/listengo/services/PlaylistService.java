@@ -12,6 +12,6 @@ public interface PlaylistService {
     Optional<Playlist> searchById(String id);
     Playlist save(Playlist playlist);
     Playlist delete(String playlistId);
-    List<Playlist> findByPlaylistName(String name);
+    List<Playlist> findByPlaylistName(String name, String creator);
 
 }

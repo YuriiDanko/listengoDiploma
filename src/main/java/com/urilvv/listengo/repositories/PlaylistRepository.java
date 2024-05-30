@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface PlaylistRepository extends JpaRepository<Playlist, String> {
-    @Query("SELECT p FROM Playlist p WHERE p.playlistName ILIKE %:parameter%")
-    List<Playlist> findByPlaylistNameContainingIgnoreCase(@Param("parameter") String parameter);
+    @Query("SELECT p FROM Playlist p WHERE p.playlistName ILIKE %:parameter% AND p.creator != :creatorId")
+    List<Playlist> findByPlaylistNameContainingIgnoreCaseAndCreatorNotIn(@Param("parameter") String parameter, @Param("creatorId") String creatorId);
 }

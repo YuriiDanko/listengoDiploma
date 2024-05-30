@@ -70,8 +70,8 @@ public class SpotifyController {
         return Parser.getTracksJson(jsonNode.get("tracks")).toString(4);
     }
 
-    @GetMapping("/search/{searchValue}")
-    private String search(@PathVariable("searchValue") String searchValue) throws JsonProcessingException {
+    @GetMapping("/search/{searchValue}/{userId}")
+    private String search(@PathVariable("searchValue") String searchValue, @PathVariable("userId") String userId) throws JsonProcessingException {
         String requestUrl = startUrl + "/search?type=track,artist,album&q=track" + searchValue.replace(" ", "") + "&limit=14";
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -88,10 +88,10 @@ public class SpotifyController {
                 return errorException.getResponseBodyAsString();
             }
             accessToken = webApplicationContext.getBean(String.class);
-            return search(searchValue);
+            return search(searchValue, userId);
         }
 
-        ArrayList<Playlist> playlists = (ArrayList<Playlist>) playlistService.findByPlaylistName(searchValue);
+        ArrayList<Playlist> playlists = (ArrayList<Playlist>) playlistService.findByPlaylistName(searchValue, userId);
 
         JsonNode jsonNode = Parser.parseJson(response.getBody());
 

@@ -47,8 +47,8 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public List<Playlist> findByPlaylistName(String name) {
-        return playlistRepository.findByPlaylistNameContainingIgnoreCase(name);
+    public List<Playlist> findByPlaylistName(String name, String creator) {
+        return playlistRepository.findByPlaylistNameContainingIgnoreCaseAndCreatorNotIn(name, creator);
     }
 
 }
