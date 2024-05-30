@@ -11,6 +11,7 @@ import com.urilvv.listengo.models.securityModels.response.LoginRegisterRes;
 import com.urilvv.listengo.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,7 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.authentication.AuthenticationManager;
+
+import java.util.HashSet;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,12 +31,14 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     private JwtBuilderClass jwtUtil;
     private PasswordEncoder passwordEncoder;
+    private String accessToken;
 
-    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtBuilderClass jwtUtil, PasswordEncoder passwordEncoder) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtBuilderClass jwtUtil, PasswordEncoder passwordEncoder, String accessToken) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
+        this.accessToken = accessToken;
     }
 
     @PostMapping("/register")
@@ -43,11 +47,12 @@ public class AuthController {
         user.setEmail(registerReq.getEmail());
         user.setUserName(registerReq.getUsername());
         user.setPassword(passwordEncoder.encode(registerReq.getPassword()));
-        String token = jwtUtil.createToken(userService.createUser(user));
+        user.setPlaylists(new HashSet<>());
+        String token = jwtUtil.createToken(UserMapper.mapToDto(userService.createUser(user)));
 
-        LoginRegisterRes registerRes = new LoginRegisterRes(user.getUserName(), token);
+        LoginRegisterRes registerRes = new LoginRegisterRes(user.getUserName(), token, user.getUserId(), accessToken);
 
-        return ResponseEntity.ok(registerRes);
+        return ResponseEntity.status(HttpStatus.CREATED).body(registerRes);
     }
 
     @PostMapping("/login")
@@ -58,10 +63,9 @@ public class AuthController {
             String username = authentication.getName();
             UserDto userDto = UserMapper.mapToDto(userService.searchUser(username).get());
             String token = jwtUtil.createToken(userDto);
-            LoginRegisterRes loginRes = new LoginRegisterRes(username, token);
+            LoginRegisterRes loginRes = new LoginRegisterRes(username, token, userDto.getUserId(), accessToken);
 
-            return ResponseEntity.ok(loginRes);
-
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(loginRes);
         } catch (BadCredentialsException e) {
             ErrorRes errorResponse = new ErrorRes(HttpStatus.BAD_REQUEST, "Invalid username or password");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);

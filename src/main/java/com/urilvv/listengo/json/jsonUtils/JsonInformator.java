@@ -41,7 +41,9 @@ public class JsonInformator {
                         artistNode.get("name").toString().replace("\"", ""),
                         ""))
                 .album(new AlbumJsonModel(jsonNode.get("album").get("id").toString().replace("\"", ""),
-                        jsonNode.get("album").get("name").toString().replace("\"", "")))
+                        jsonNode.get("album").get("name").toString().replace("\"", ""),
+                        "",
+                        jsonNode.get("album").get("artists").get(0).get("name").toString().replace("\"", "")))
                 .build();
 
         JSONObject jsonObject = new JSONObject(Parser.toJson(song));
@@ -90,8 +92,14 @@ public class JsonInformator {
     }
 
     private static void getAlbumJsonInfo(JsonNode node, JSONArray resultArray) throws JsonProcessingException {
+        JSONObject imageObject = new JSONObject(node.toString());
+        JSONArray jsonArray = imageObject.getJSONArray("images");
+        imageObject = (JSONObject) jsonArray.get(0);
+
         AlbumJsonModel album = new AlbumJsonModel(node.get("id").toString().replace("\"", ""),
-                node.get("name").toString().replace("\"", ""));
+                node.get("name").toString().replace("\"", ""),
+                imageObject.get("url").toString().replace("\"", ""),
+                node.get("artists").get(0).get("name").toString().replace("\"", ""));
 
         JSONObject jsonObject = new JSONObject(Parser.toJson(album));
         resultArray.put(jsonObject);

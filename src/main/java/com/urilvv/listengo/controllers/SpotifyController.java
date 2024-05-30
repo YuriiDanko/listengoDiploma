@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.urilvv.listengo.json.jsonUtils.JsonInformator;
 import com.urilvv.listengo.json.jsonUtils.Parser;
+import com.urilvv.listengo.models.Playlist;
+import com.urilvv.listengo.services.PlaylistService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -17,28 +19,32 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
+
 @RestController
 public class SpotifyController {
 
     private String accessToken;
     private final WebApplicationContext webApplicationContext;
     private final RestTemplate restTemplate;
+    private final PlaylistService playlistService;
     @Value("${spotify.url}")
     private String startUrl;
     private final Logger logger;
 
     @Autowired
-    public SpotifyController(String accessToken, WebApplicationContext applicationContext, RestTemplate restTemplate, Logger logger) {
+    public SpotifyController(String accessToken, WebApplicationContext applicationContext, RestTemplate restTemplate, PlaylistService playlistService, Logger logger) {
         this.accessToken = accessToken;
         this.webApplicationContext = applicationContext;
         this.restTemplate = restTemplate;
+        this.playlistService = playlistService;
         this.logger = logger;
     }
 
-    @GetMapping("/recommendations")
-    private String recommendations() throws JsonProcessingException {
-        String requestUrl = startUrl + "/recommendations?limit=10&market=ES&seed_artists=4NHQUGzhtTLFvgF5SZesLK&" +
-                "seed_genres=classical,rock&seed_tracks=0c6xIDDpzE81m2q797ordA";
+    @GetMapping("/recommendations/{genre}")
+    private String recommendations(@PathVariable("genre") String genre) throws JsonProcessingException {
+        String requestUrl = startUrl + "/recommendations?limit=40&market=ES&seed_artists=4NHQUGzhtTLFvgF5SZesLK&" +
+                "seed_genres=" + genre + "&seed_tracks=0c6xIDDpzE81m2q797ordA";
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(accessToken);
@@ -54,7 +60,7 @@ public class SpotifyController {
                 return errorException.getResponseBodyAsString();
             }
             accessToken = webApplicationContext.getBean(String.class);
-            return recommendations();
+            return recommendations(genre);
         }
 
         JsonNode jsonNode = Parser.parseJson(response.getBody());
@@ -64,9 +70,9 @@ public class SpotifyController {
         return Parser.getTracksJson(jsonNode.get("tracks")).toString(4);
     }
 
-    @GetMapping("/search/{searchValue}")
-    private String search(@PathVariable("searchValue") String searchValue) throws JsonProcessingException {
-        String requestUrl = startUrl + "/search?type=track,artist,album&q=track" + searchValue.replace(" ", "") + "&limit=5";
+    @GetMapping("/search/{searchValue}/{userId}")
+    private String search(@PathVariable("searchValue") String searchValue, @PathVariable("userId") String userId) throws JsonProcessingException {
+        String requestUrl = startUrl + "/search?type=track,artist,album&q=track" + searchValue.replace(" ", "") + "&limit=14";
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(accessToken);
@@ -82,8 +88,10 @@ public class SpotifyController {
                 return errorException.getResponseBodyAsString();
             }
             accessToken = webApplicationContext.getBean(String.class);
-            return search(searchValue);
+            return search(searchValue, userId);
         }
+
+        ArrayList<Playlist> playlists = (ArrayList<Playlist>) playlistService.findByPlaylistName(searchValue, userId);
 
         JsonNode jsonNode = Parser.parseJson(response.getBody());
 
@@ -91,6 +99,7 @@ public class SpotifyController {
         resultJson.put("tracks", Parser.getTracksJson(jsonNode.get("tracks").get("items")));
         resultJson.put("albums", Parser.getAlbumsJson(jsonNode.get("albums").get("items")));
         resultJson.put("artists", Parser.getArtistsJson(jsonNode.get("artists").get("items")));
+        resultJson.put("playlists", new JSONArray(Parser.toJson(playlists)));
 
         logger.info("Search results returned");
 
@@ -208,6 +217,32 @@ public class SpotifyController {
         logger.info("Artist top-tracks returned");
 
         return Parser.getTracksJson(jsonNode.get("tracks")).toString(4);
+    }
+
+    @GetMapping("/artist/{artistId}/albums")
+    public String getArtistAlbums(@PathVariable("artistId") String artistId) throws JsonProcessingException {
+        String requestUrl = startUrl + "/artists/" + artistId + "/albums?limit=10";
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setBearerAuth(accessToken);
+        HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
+
+        ResponseEntity<String> response;
+
+        try{
+            response = restTemplate.exchange(requestUrl, HttpMethod.GET, httpEntity, String.class);
+        } catch (HttpClientErrorException errorException){
+            if(errorException.getStatusCode() != HttpStatus.valueOf(401)){
+                logger.error("Error occurred: " + errorException.getStatusCode() + " " + errorException.getMessage());
+                return errorException.getResponseBodyAsString();
+            }
+            accessToken = webApplicationContext.getBean(String.class);
+            return getTopTracks(artistId);
+        }
+
+        JsonNode jsonNode = Parser.parseJson(response.getBody());
+
+        return Parser.getAlbumsJson(jsonNode.get("items")).toString(4);
     }
 
 }

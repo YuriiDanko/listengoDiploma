@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Parser {
 
@@ -38,6 +39,7 @@ public class Parser {
                     .trackId(node.get("id").toString().replace("\"", ""))
                     .albumId(albumId)
                     .artistId(node.get("artists").findValue("id").toString().replace("\"", ""))
+                    .playlists(new HashSet<>())
                     .build();
 
             songs.add(song);
@@ -54,6 +56,7 @@ public class Parser {
                     .trackId(node.get("id").toString().replace("\"", ""))
                     .albumId(node.get("album").get("id").toString().replace("\"", ""))
                     .artistId(node.get("album").get("artists").findValue("id").toString().replace("\"", ""))
+                    .playlists(new HashSet<>())
                     .build();
 
             songs.add(song);

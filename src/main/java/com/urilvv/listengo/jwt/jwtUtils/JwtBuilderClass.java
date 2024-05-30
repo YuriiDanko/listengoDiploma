@@ -6,6 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
+import java.sql.Time;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -14,8 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class JwtBuilderClass {
 
     private final String secretKey = "BQCT1sqNTOv2vBmPOUIpZqxioUgCLL41COotZ7CfioQNx9dBpuWH9ftTmI";
-    private long accessTokenValidity = 60 * 60 * 1000;
-    private final JwtParser jwtParser;
+    public final JwtParser jwtParser;
     private final String TOKEN_HEADER = "Authorization";
     private final String TOKEN_PREFIX = "Bearer ";
 
@@ -28,8 +30,11 @@ public class JwtBuilderClass {
                 .add("username", userDto.getUserName())
                 .add("email", userDto.getEmail())
                 .build();
-        Date tokenCreateTime = new Date();
-        Date tokenValidityTime = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(accessTokenValidity));
+        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDateTime modifiedDateTime = localDateTime.plusHours(1);
+        Date tokenValidityTime = Date.from(
+                modifiedDateTime.atZone(ZoneId.systemDefault())
+                        .toInstant());
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(tokenValidityTime)
