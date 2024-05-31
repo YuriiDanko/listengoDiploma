@@ -1,4 +1,4 @@
-package com.urilvv.listengo.models.securityModels.response;
+package com.urilvv.listengo.models.httpModels.response;
 
 import com.urilvv.listengo.dto.Message;
 

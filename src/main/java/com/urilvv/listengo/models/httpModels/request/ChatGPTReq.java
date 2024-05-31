@@ -1,4 +1,4 @@
-package com.urilvv.listengo.models.securityModels.request;
+package com.urilvv.listengo.models.httpModels.request;
 
 import com.urilvv.listengo.dto.Message;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class ChatGPTReq {
     public ChatGPTReq(String model, String prompt) {
         this.model = model;
         this.messages = new ArrayList<>();
-        this.messages.add(new Message("system", "Imagine you are an music advisor. Return an answers in this format \"SongName\" - \"SongArtist\""));
+        this.messages.add(new Message("system", "Imagine you are an music advisor. Return an answers in this format \"SongName - SongArtist\""));
         this.messages.add(new Message("user", prompt));
     }
 

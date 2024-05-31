@@ -1,8 +1,6 @@
-package com.urilvv.listengo.models.securityModels.response;
+package com.urilvv.listengo.models.httpModels.response;
 
 import org.springframework.http.HttpStatus;
-
-import java.util.UUID;
 
 public class ErrorRes {
 
