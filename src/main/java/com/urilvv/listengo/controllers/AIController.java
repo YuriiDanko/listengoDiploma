@@ -53,7 +53,8 @@ public class AIController {
         if(liked.isEmpty()){
             promptString = "Give me a song recommendation but don't repeat this one " + disliked;
         } else {
-            promptString = "Give me a song recommendation similar to this songs " + liked + " but do not repeat this songs and do not recommend this one " + disliked;
+            promptString = "Give me a song recommendation, based on this songs as liked - " + liked + " and this ones as disliked " + disliked +
+                    ", the main thing is to not use liked and disliked songs again";
         }
 
         ChatGPTReq request = new ChatGPTReq(model, promptString);
