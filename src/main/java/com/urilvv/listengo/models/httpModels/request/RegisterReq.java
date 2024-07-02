@@ -1,4 +1,4 @@
-package com.urilvv.listengo.models.securityModels.request;
+package com.urilvv.listengo.models.httpModels.request;
 
 public class RegisterReq {
 
