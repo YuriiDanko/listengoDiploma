@@ -22,9 +22,6 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     public Playlist createPlaylist(Playlist playlist) {
-        if(playlist == null){
-            throw new NullPointerException();
-        }
         return playlistRepository.save(playlist);
     }
 
